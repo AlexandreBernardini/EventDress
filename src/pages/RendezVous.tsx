@@ -1,5 +1,6 @@
 import { type FormEvent, useState } from "react"
 import AvailabilityCalendar from "../components/AvailabilityCalendar"
+import TimeSlotPicker from "../components/TimeSlotPicker"
 
 const purposes = ["Essayage", "Location", "Conseil", "Autre"] as const
 
@@ -11,6 +12,7 @@ const dateFormatter = new Intl.DateTimeFormat("fr-FR", {
 
 export default function RendezVous() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
   const [dateError, setDateError] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -18,7 +20,7 @@ export default function RendezVous() {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (!selectedDate) {
+    if (!selectedDate || !selectedSlot) {
       setDateError(true)
       return
     }
@@ -41,8 +43,8 @@ export default function RendezVous() {
           Prendre rendez-vous
         </h1>
         <p className="max-w-md text-sm leading-relaxed text-ink-soft/80">
-          Choisissez une date disponible dans le calendrier, puis laissez-nous
-          vos coordonnées. Calendrier à titre indicatif pour l'instant.
+          Choisissez une date et un créneau disponibles, puis laissez-nous vos
+          coordonnées. Calendrier à titre indicatif pour l'instant.
         </p>
       </div>
 
@@ -52,11 +54,13 @@ export default function RendezVous() {
           <h2 className="font-display text-2xl text-ink">Merci !</h2>
           <p className="mt-3 text-sm leading-relaxed text-ink-soft/80">
             Votre demande de rendez-vous
-            {selectedDate && (
+            {selectedDate && selectedSlot && (
               <>
                 {" "}
                 pour le{" "}
-                <span className="text-ink">{dateFormatter.format(selectedDate)}</span>
+                <span className="text-ink">
+                  {dateFormatter.format(selectedDate)} à {selectedSlot}
+                </span>
               </>
             )}{" "}
             a bien été envoyée. Nous vous recontacterons très prochainement
@@ -65,24 +69,37 @@ export default function RendezVous() {
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="grid gap-10 md:grid-cols-2">
-          <div>
+          <div className="space-y-6">
             <AvailabilityCalendar
               selected={selectedDate}
               onSelect={(date) => {
                 setSelectedDate(date)
+                setSelectedSlot(null)
                 setDateError(false)
               }}
             />
-            <p className="mt-4 min-h-5 text-center font-display text-sm text-ink">
-              {selectedDate
-                ? `Date choisie : ${dateFormatter.format(selectedDate)}`
+
+            {selectedDate && (
+              <TimeSlotPicker
+                date={selectedDate}
+                selected={selectedSlot}
+                onSelect={(time) => {
+                  setSelectedSlot(time)
+                  setDateError(false)
+                }}
+              />
+            )}
+
+            <p className="min-h-5 text-center font-display text-sm text-ink">
+              {selectedDate && selectedSlot
+                ? `Rendez-vous choisi : ${dateFormatter.format(selectedDate)} à ${selectedSlot}`
                 : dateError
                   ? (
                     <span className="text-[#8a2e2e]">
-                      Merci de choisir une date disponible
+                      Merci de choisir une date et un créneau disponibles
                     </span>
                   )
-                  : " "}
+                  : " "}
             </p>
           </div>
 

@@ -1,13 +1,28 @@
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useLocation } from "react-router-dom"
+import dame from "./assets/dame.png"
 import Footer from "./components/Footer"
 import Navbar from "./components/Navbar"
+import ScrollToTop from "./components/ScrollToTop"
 import Catalogue from "./pages/Catalogue"
 import Home from "./pages/Home"
 import RendezVous from "./pages/RendezVous"
 
 export default function App() {
+  const { pathname } = useLocation()
+  const showWatermark = pathname !== "/"
+
   return (
-    <div className="flex min-h-screen flex-col bg-cream text-ink">
+    <div className="isolate relative flex min-h-screen flex-col bg-cream text-ink">
+      {showWatermark && (
+        <img
+          src={dame}
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none fixed -right-16 top-20 -z-10 h-[75vh] max-h-[720px] w-auto opacity-20 md:-right-6 md:h-[80vh]"
+        />
+      )}
+
+      <ScrollToTop />
       <Navbar />
       <main className="flex-1">
         <Routes>

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom"
-import logo from "../assets/logo.png"
+import wordmark from "../assets/wordmark.png"
+import DressCarousel from "../components/DressCarousel"
+import HeroVideo from "../components/HeroVideo"
 
 const highlights = [
   {
@@ -20,44 +22,45 @@ export default function Home() {
   return (
     <div>
       {/* Hero */}
-      <section className="mx-auto flex max-w-6xl flex-col items-center gap-10 px-6 pb-20 pt-14 text-center md:px-10 md:pt-24">
-        <img src={logo} alt="Event Dress" className="h-40 w-auto md:h-52" />
-
-        <div className="flex flex-col items-center gap-6">
-          <span className="rule" />
+      <section className="mx-auto grid max-w-6xl items-center gap-14 px-6 pb-20 pt-14 md:grid-cols-[1.1fr_0.9fr] md:gap-10 md:px-10 md:pt-20">
+        <div className="flex flex-col items-center gap-6 text-center md:items-start md:text-left">
+          <img src={wordmark} alt="Event Dress" className="h-28 w-auto md:h-36" />
           <h1 className="font-display text-4xl leading-tight text-ink md:text-6xl">
             La robe parfaite,
             <br />
             le temps d'un événement
           </h1>
-          <span className="rule" />
+
+          <p className="max-w-xl text-balance text-base leading-relaxed text-ink-soft/80 md:text-lg">
+            Event Dress vous accompagne dans la location de robes de soirée
+            haut de gamme : galas, mariages, cocktails. Découvrez la
+            collection et réservez votre essayage.
+          </p>
+
+          <div className="flex flex-col gap-4 sm:flex-row">
+            <Link
+              to="/catalogue"
+              className="border border-ink px-8 py-3 text-center font-display text-sm uppercase tracking-widest-plus text-ink transition-colors hover:bg-ink hover:text-cream"
+            >
+              Découvrir le catalogue
+            </Link>
+            <Link
+              to="/rendez-vous"
+              className="bg-ink px-8 py-3 text-center font-display text-sm uppercase tracking-widest-plus text-cream transition-colors hover:bg-ink-soft"
+            >
+              Prendre rendez-vous
+            </Link>
+          </div>
         </div>
 
-        <p className="max-w-xl text-balance text-base leading-relaxed text-ink-soft/80 md:text-lg">
-          Event Dress vous accompagne dans la location de robes de soirée
-          haut de gamme : galas, mariages, cocktails. Découvrez la
-          collection et réservez votre essayage.
-        </p>
-
-        <div className="flex flex-col gap-4 sm:flex-row">
-          <Link
-            to="/catalogue"
-            className="border border-ink px-8 py-3 font-display text-sm uppercase tracking-widest-plus text-ink transition-colors hover:bg-ink hover:text-cream"
-          >
-            Découvrir le catalogue
-          </Link>
-          <Link
-            to="/rendez-vous"
-            className="bg-ink px-8 py-3 font-display text-sm uppercase tracking-widest-plus text-cream transition-colors hover:bg-ink-soft"
-          >
-            Prendre rendez-vous
-          </Link>
+        <div>
+          <HeroVideo />
         </div>
       </section>
 
       {/* Presentation / highlights */}
-      <section className="border-t border-ink/10 bg-cream-dark/40">
-        <div className="mx-auto max-w-6xl px-6 py-20 md:px-10">
+      <section>
+        <div className="mx-auto max-w-6xl border-t border-ink/10 px-6 py-20 md:px-10">
           <div className="mx-auto mb-14 flex max-w-2xl flex-col items-center gap-4 text-center">
             <span className="font-display text-sm uppercase tracking-widest-plus text-taupe">
               L'expérience Event Dress
@@ -81,9 +84,25 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Models carousel */}
+      <section>
+        <div className="mx-auto max-w-7xl border-t border-ink/10 px-6 py-20 md:px-10">
+          <div className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-4 text-center">
+            <span className="font-display text-sm uppercase tracking-widest-plus text-taupe">
+              La collection
+            </span>
+            <h2 className="font-display text-3xl text-ink md:text-4xl">
+              Quelques-uns de nos modèles
+            </h2>
+          </div>
+
+          <DressCarousel />
+        </div>
+      </section>
+
       {/* CTA band */}
-      <section className="border-t border-ink/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 px-6 py-20 text-center md:px-10">
+      <section>
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-6 border-t border-ink/10 px-6 py-20 text-center md:px-10">
           <h2 className="font-display text-3xl text-ink md:text-4xl">
             Prête à trouver votre robe ?
           </h2>

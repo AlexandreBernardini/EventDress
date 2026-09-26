@@ -40,3 +40,21 @@ export function getDayStatus(date: Date): DayStatus {
   if (d.getDay() === 0) return "busy" // fermé le dimanche
   return busyDays.has(toKey(d)) ? "busy" : "available"
 }
+
+export type TimeSlot = {
+  time: string
+  available: boolean
+}
+
+const TIME_SLOTS = ["10:00", "11:00", "12:00", "14:00", "15:00", "16:00", "17:00", "18:00"]
+
+// Créneaux de démonstration, générés de façon stable par date (pas aléatoire
+// à chaque rendu) — à remplacer par le vrai planning d'essayage de la cliente.
+export function getTimeSlots(date: Date): TimeSlot[] {
+  const seed = Array.from(toKey(date)).reduce((sum, char) => sum + char.charCodeAt(0), 0)
+
+  return TIME_SLOTS.map((time, i) => ({
+    time,
+    available: (seed + i * 7) % 5 !== 0,
+  }))
+}
