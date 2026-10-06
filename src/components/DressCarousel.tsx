@@ -1,7 +1,6 @@
 import { useRef } from "react"
 import { Link } from "react-router-dom"
 import { dresses } from "../data/dresses"
-import { isLight } from "../lib/color"
 
 export default function DressCarousel() {
   const trackRef = useRef<HTMLDivElement>(null)
@@ -24,19 +23,13 @@ export default function DressCarousel() {
             to="/catalogue"
             className="group w-[220px] shrink-0 snap-start"
           >
-            <div
-              className="relative mb-4 flex aspect-[3/4] items-center justify-center overflow-hidden transition-transform duration-500 group-hover:scale-[1.02]"
-              style={{ backgroundColor: dress.swatch }}
-            >
-              <span
-                className="font-display text-5xl"
-                style={{ color: isLight(dress.swatch) ? "#1c1a17" : "#f6f1e9", opacity: 0.35 }}
-              >
-                {dress.name
-                  .split(" ")
-                  .map((w) => w[0])
-                  .join("")}
-              </span>
+            <div className="relative mb-4 aspect-[3/4] overflow-hidden bg-cream-dark">
+              <img
+                src={dress.images[0]}
+                alt={dress.name}
+                loading="lazy"
+                className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
             </div>
             <h3 className="font-display text-lg text-ink">{dress.name}</h3>
             <p className="text-xs uppercase tracking-widest-plus text-ink/50">

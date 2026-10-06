@@ -34,6 +34,7 @@ export default function RendezVous() {
   }
 
   return (
+    <>
     <div className="mx-auto max-w-4xl px-6 py-16 md:px-10 md:py-20">
       <div className="mb-12 flex flex-col items-center gap-4 text-center">
         <span className="font-display text-sm uppercase tracking-widest-plus text-taupe">
@@ -160,6 +161,56 @@ export default function RendezVous() {
         </form>
       )}
     </div>
+
+    <section className="border-t border-ink/10">
+      <div className="mx-auto grid max-w-5xl gap-14 px-6 py-20 md:grid-cols-2 md:px-10">
+        <div>
+          <span className="font-display text-sm uppercase tracking-widest-plus text-taupe">
+            En atelier
+          </span>
+          <h2 className="mt-3 font-display text-2xl text-ink">Comment se passe la réservation</h2>
+          <ol className="mt-6 space-y-5 text-sm leading-relaxed text-ink-soft/80">
+            <li>
+              <span className="font-display text-ink">1. Essayage sur rendez-vous.</span>{" "}
+              Vous essayez les modèles disponibles et choisissez votre robe.
+            </li>
+            <li>
+              <span className="font-display text-ink">2. Acompte de 20 %</span>{" "}
+              du montant de la location, pour bloquer la date.
+            </li>
+            <li>
+              <span className="font-display text-ink">3. Caution</span>{" "}
+              par empreinte bancaire ou chèque de caution.
+            </li>
+            <li>
+              <span className="font-display text-ink">4. Solde</span>{" "}
+              à régler en ligne ou lors du retrait de la robe.
+            </li>
+          </ol>
+        </div>
+
+        <div>
+          <span className="font-display text-sm uppercase tracking-widest-plus text-taupe">
+            À distance
+          </span>
+          <h2 className="mt-3 font-display text-2xl text-ink">Réservation en ligne</h2>
+          <p className="mt-6 text-sm leading-relaxed text-ink-soft/80">
+            Pour les clientes qui ne peuvent pas se déplacer : réservez directement en ligne, avec
+            paiement intégral de la location au moment de la réservation. La caution se fait par
+            empreinte bancaire ou par chèque envoyé avant l'expédition de la robe.
+          </p>
+
+          <h2 className="mt-10 font-display text-2xl text-ink">Retrait et retour</h2>
+          <ul className="mt-6 space-y-3 text-sm leading-relaxed text-ink-soft/80">
+            <li>Robe à récupérer 1 à 2 jours avant l'événement.</li>
+            <li>Le pressing est inclus dans le tarif de location.</li>
+            <li>Retour le lundi suivant l'événement.</li>
+            <li>Réception uniquement sur rendez-vous, pour un accompagnement personnalisé.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    </>
   )
 }
 

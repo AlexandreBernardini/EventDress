@@ -41,6 +41,13 @@ export function getDayStatus(date: Date): DayStatus {
   return busyDays.has(toKey(d)) ? "busy" : "available"
 }
 
+// Disponibilité de démonstration d'une robe à une date — à remplacer par le vrai planning de location.
+export function isDressAvailableOn(dressId: string, date: Date): boolean {
+  if (date.getDay() === 0) return false
+  const seed = Array.from(`${dressId}|${toKey(date)}`).reduce((sum, char) => sum + char.charCodeAt(0), 0)
+  return seed % 4 !== 0
+}
+
 export type TimeSlot = {
   time: string
   available: boolean

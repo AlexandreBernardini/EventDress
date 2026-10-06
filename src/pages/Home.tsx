@@ -1,16 +1,23 @@
 import { Link } from "react-router-dom"
+import bandeau from "../assets/photos/photo-11.jpg"
 import wordmark from "../assets/wordmark.png"
 import DressCarousel from "../components/DressCarousel"
 import HeroVideo from "../components/HeroVideo"
+import { dresses } from "../data/dresses"
+import { googleRating, googleReviewsUrl, reviews } from "../data/reviews"
 
 const highlights = [
   {
-    title: "Une sélection pointue",
-    text: "Chaque robe est choisie pour sa coupe, sa matière et sa capacité à sublimer chaque silhouette.",
+    title: "Des robes à laçage",
+    text: "Des modèles ajustables grâce à leurs laçages, pour s'adapter à chaque corps.",
+  },
+  {
+    title: "Essayage sur rendez-vous",
+    text: "Un essayage uniquement sur rendez-vous, pour un accompagnement personnalisé.",
   },
   {
     title: "Conseil personnalisé",
-    text: "Un rendez-vous dédié pour trouver la robe qui correspond à votre événement et à votre style.",
+    text: "Un temps dédié pour trouver la robe qui correspond à votre événement et à votre style.",
   },
   {
     title: "Location simple",
@@ -58,6 +65,21 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Bandeau photo */}
+      <section className="relative h-[60vh] min-h-[420px] overflow-hidden">
+        <img src={bandeau} alt="" className="h-full w-full object-cover object-[center_12%]" />
+        <div className="absolute inset-0 flex items-center justify-center bg-ink/45 px-6 text-center">
+          <div className="flex max-w-2xl flex-col items-center gap-5">
+            <span className="font-display text-sm uppercase tracking-widest-plus text-cream/80">
+              Event Dress
+            </span>
+            <h2 className="font-display text-3xl leading-snug text-cream md:text-5xl">
+              Des robes pensées pour s'adapter à chaque silhouette
+            </h2>
+          </div>
+        </div>
+      </section>
+
       {/* Presentation / highlights */}
       <section>
         <div className="mx-auto max-w-6xl border-t border-ink/10 px-6 py-20 md:px-10">
@@ -68,9 +90,13 @@ export default function Home() {
             <h2 className="font-display text-3xl text-ink md:text-4xl">
               Une garde-robe de soirée, sans les contraintes
             </h2>
+            <p className="mt-2 font-display text-5xl text-ink">{dresses.length}</p>
+            <p className="text-xs uppercase tracking-widest-plus text-ink/60">
+              modèles disponibles à la location
+            </p>
           </div>
 
-          <div className="grid gap-10 md:grid-cols-3">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
             {highlights.map((item) => (
               <div key={item.title} className="text-center">
                 <span className="mx-auto mb-5 block h-px w-10 bg-taupe" />
@@ -97,6 +123,57 @@ export default function Home() {
           </div>
 
           <DressCarousel />
+        </div>
+      </section>
+
+      {/* Avis */}
+      <section>
+        <div className="mx-auto max-w-6xl border-t border-ink/10 px-6 py-20 md:px-10">
+          <div className="mx-auto mb-12 flex max-w-2xl flex-col items-center gap-4 text-center">
+            <span className="font-display text-sm uppercase tracking-widest-plus text-taupe">
+              Témoignages
+            </span>
+            <h2 className="font-display text-3xl text-ink md:text-4xl">Avis de nos clientes</h2>
+            <p className="font-display text-lg text-ink">
+              <span className="text-taupe">★</span> {googleRating.score} sur 5 · {googleRating.count} avis Google
+            </p>
+          </div>
+
+          {reviews.length === 0 ? (
+            <p className="text-center text-sm leading-relaxed text-ink-soft/80">
+              Les avis de nos clientes arrivent très bientôt.
+            </p>
+          ) : (
+            <div className="grid gap-10 md:grid-cols-3">
+              {reviews.map((review) => (
+                <figure key={review.id} className="border border-ink/15 p-8">
+                  <p className="font-display text-lg text-taupe" aria-label={`${review.rating} sur 5`}>
+                    {"★".repeat(review.rating)}
+                    <span className="text-ink/20">{"★".repeat(5 - review.rating)}</span>
+                  </p>
+                  <blockquote className="mt-4 text-sm leading-relaxed text-ink-soft/90">
+                    « {review.text} »
+                  </blockquote>
+                  <figcaption className="mt-6 font-display text-xs uppercase tracking-widest-plus text-ink/60">
+                    {review.author} · {review.date}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+          )}
+
+          {googleReviewsUrl && (
+            <div className="mt-12 flex justify-center">
+              <a
+                href={googleReviewsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-ink px-8 py-3 font-display text-sm uppercase tracking-widest-plus text-ink transition-colors hover:bg-ink hover:text-cream"
+              >
+                Voir nos avis Google
+              </a>
+            </div>
+          )}
         </div>
       </section>
 

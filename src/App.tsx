@@ -4,8 +4,12 @@ import Footer from "./components/Footer"
 import Navbar from "./components/Navbar"
 import ScrollToTop from "./components/ScrollToTop"
 import Catalogue from "./pages/Catalogue"
+import Collaborations from "./pages/Collaborations"
+import Compte from "./pages/Compte"
 import Home from "./pages/Home"
+import Panier from "./pages/Panier"
 import RendezVous from "./pages/RendezVous"
+import Vente from "./pages/Vente"
 
 export default function App() {
   const { pathname } = useLocation()
@@ -29,6 +33,10 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/catalogue" element={<Catalogue />} />
           <Route path="/rendez-vous" element={<RendezVous />} />
+          <Route path="/collaborations" element={<Collaborations />} />
+          <Route path="/compte" element={<Compte />} />
+          <Route path="/panier" element={<Panier />} />
+          <Route path="/vente" element={<Vente />} />
         </Routes>
       </main>
       <Footer />

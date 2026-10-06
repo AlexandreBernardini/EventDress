@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import { socials } from "../data/social"
 
 export default function Footer() {
   return (
@@ -28,6 +29,16 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link to="/vente" className="text-ink-soft/80 hover:text-ink">
+                Vente de robes
+              </Link>
+            </li>
+            <li>
+              <Link to="/collaborations" className="text-ink-soft/80 hover:text-ink">
+                Collaborations
+              </Link>
+            </li>
+            <li>
               <Link to="/rendez-vous" className="text-ink-soft/80 hover:text-ink">
                 Prendre rendez-vous
               </Link>
@@ -43,6 +54,23 @@ export default function Footer() {
             <li>contact@event-dress.fr</li>
             <li>Sur rendez-vous uniquement</li>
           </ul>
+          {socials.some((s) => s.url) && (
+            <div className="mt-6 flex flex-wrap gap-5 text-sm">
+              {socials
+                .filter((s) => s.url)
+                .map((s) => (
+                  <a
+                    key={s.label}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-ink-soft/80 underline-offset-4 hover:text-ink hover:underline"
+                  >
+                    {s.label}
+                  </a>
+                ))}
+            </div>
+          )}
         </div>
       </div>
 
