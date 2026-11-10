@@ -69,12 +69,12 @@ export default function Home() {
             src={heroPhotoMobile}
             alt=""
             fetchPriority="high"
-            className="absolute inset-0 h-full w-full animate-slow-zoom object-cover object-[center_15%] md:object-[center_20%]"
+            className="absolute inset-0 h-full w-full animate-slow-zoom object-cover object-[center_15%] contrast-[1.05] saturate-[1.05] md:animate-none md:object-[center_20%]"
           />
         </picture>
         <div
           aria-hidden
-          className="absolute inset-0 bg-linear-to-b from-ink/70 via-ink/60 to-ink/80"
+          className="absolute inset-0 bg-linear-to-b from-ink/65 via-ink/40 to-ink/75"
         />
 
         <div className="relative flex max-w-3xl flex-col items-center gap-7 [text-shadow:0_1px_12px_rgb(0_0_0/0.35)]">
