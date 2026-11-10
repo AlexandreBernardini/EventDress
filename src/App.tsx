@@ -11,24 +11,33 @@ import Panier from "./pages/Panier"
 import RendezVous from "./pages/RendezVous"
 import Vente from "./pages/Vente"
 
+const BLANK_PIXEL = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+
 export default function App() {
   const { pathname } = useLocation()
   const showWatermark = pathname !== "/"
 
   return (
     <div className="isolate relative flex min-h-screen flex-col bg-cream text-ink">
+      {/* Filigrane décoratif : la source n'est téléchargée qu'à partir de md (48rem) */}
       {showWatermark && (
-        <img
-          src={dame}
-          alt=""
-          aria-hidden="true"
-          className="pointer-events-none fixed -right-16 top-20 -z-10 h-[75vh] max-h-[720px] w-auto opacity-20 md:-right-6 md:h-[80vh]"
-        />
+        <picture>
+          <source media="(min-width: 48rem)" srcSet={dame} />
+          <img
+            src={BLANK_PIXEL}
+            alt=""
+            aria-hidden="true"
+            width={775}
+            height={1246}
+            decoding="async"
+            className="pointer-events-none fixed -right-12 top-(--header-h) -z-10 hidden h-[78vh] max-h-[720px] w-auto select-none opacity-10 md:block lg:-right-4"
+          />
+        </picture>
       )}
 
       <ScrollToTop />
       <Navbar />
-      <main className="flex-1">
+      <main id="contenu" tabIndex={-1} className="flex-1 outline-none">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/catalogue" element={<Catalogue />} />

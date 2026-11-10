@@ -1,11 +1,42 @@
 import { useMemo, useState } from "react"
-import { getDayStatus } from "../data/availability"
+import { type DayStatus, getDayStatus } from "../data/availability"
+import { ChevronLeftIcon, ChevronRightIcon } from "./icons"
 
-const weekDays = ["L", "M", "M", "J", "V", "S", "D"]
-const monthFormatter = new Intl.DateTimeFormat("fr-FR", {
+const weekDays = [
+  { short: "L", long: "lundi" },
+  { short: "M", long: "mardi" },
+  { short: "M", long: "mercredi" },
+  { short: "J", long: "jeudi" },
+  { short: "V", long: "vendredi" },
+  { short: "S", long: "samedi" },
+  { short: "D", long: "dimanche" },
+]
+
+const monthFormatter = new Intl.DateTimeFormat("fr-FR", { month: "long" })
+const monthYearFormatter = new Intl.DateTimeFormat("fr-FR", {
   month: "long",
   year: "numeric",
 })
+const dayLabelFormatter = new Intl.DateTimeFormat("fr-FR", {
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+})
+
+const statusLabels: Record<DayStatus, string> = {
+  available: "disponible",
+  busy: "complet",
+  past: "date passée",
+}
+
+// Pastilles de légende : reprennent fidèlement le rendu des jours du calendrier.
+const legend = [
+  { label: "Sélectionné", swatchClass: "bg-ink text-cream" },
+  { label: "Disponible", swatchClass: "text-ink" },
+  { label: "Aujourd'hui", swatchClass: "text-ink ring-1 ring-taupe-deep ring-inset" },
+  { label: "Complet", swatchClass: "text-ink/40 line-through decoration-ink/40" },
+]
 
 function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1)
@@ -53,25 +84,45 @@ export default function AvailabilityCalendar({ selected, onSelect }: Props) {
   }, [visibleMonth])
 
   const today = new Date()
+  const canGoBack = visibleMonth.getTime() > startOfMonth(today).getTime()
+  const monthLabel = monthYearFormatter.format(visibleMonth)
+
+  const navButtonClass =
+    "flex size-10 shrink-0 items-center justify-center border border-ink/25 text-ink transition-colors duration-500 ease-luxe hover:border-ink hover:bg-ink hover:text-cream aria-disabled:pointer-events-none aria-disabled:opacity-30 sm:size-11"
 
   return (
-    <div className="border border-ink/15 p-6 md:p-8">
-      <div className="mb-6 flex items-center justify-between">
+    <div className="panel px-3 py-6 sm:p-7">
+      <div className="mb-6 flex items-center justify-between gap-4 px-1 sm:px-0">
         <button
           type="button"
           aria-label="Mois précédent"
-          onClick={() =>
+          aria-disabled={!canGoBack}
+          onClick={() => {
+            // aria-disabled plutôt que disabled : le bouton garde le focus
+            // clavier lorsqu'on revient au mois courant.
+            if (!canGoBack) return
             setVisibleMonth(
               (m) => new Date(m.getFullYear(), m.getMonth() - 1, 1),
             )
-          }
-          className="font-display text-lg text-ink/60 transition-colors hover:text-ink"
+          }}
+          className={navButtonClass}
         >
-          ‹
+          <ChevronLeftIcon />
         </button>
-        <p className="font-display text-lg capitalize text-ink">
-          {monthFormatter.format(visibleMonth)}
+
+        <p aria-live="polite" className="flex items-baseline gap-3 text-center">
+          <span className="sr-only">{monthLabel}</span>
+          <span aria-hidden="true" className="font-display text-2xl capitalize text-ink">
+            {monthFormatter.format(visibleMonth)}
+          </span>
+          <span
+            aria-hidden="true"
+            className="font-display text-sm tracking-[0.2em] text-taupe-deep"
+          >
+            {visibleMonth.getFullYear()}
+          </span>
         </p>
+
         <button
           type="button"
           aria-label="Mois suivant"
@@ -80,72 +131,85 @@ export default function AvailabilityCalendar({ selected, onSelect }: Props) {
               (m) => new Date(m.getFullYear(), m.getMonth() + 1, 1),
             )
           }
-          className="font-display text-lg text-ink/60 transition-colors hover:text-ink"
+          className={navButtonClass}
         >
-          ›
+          <ChevronRightIcon />
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1.5">
-        {weekDays.map((d, i) => (
-          <div
-            key={`${d}-${i}`}
-            className="pb-2 text-center font-display text-[11px] uppercase tracking-widest-plus text-ink/40"
+      <div className="grid grid-cols-7 gap-y-1.5 sm:gap-x-1" aria-hidden="true">
+        {weekDays.map((d) => (
+          <abbr
+            key={d.long}
+            title={d.long}
+            className="pb-3 text-center font-display text-xs font-medium uppercase tracking-[0.2em] text-taupe-deep no-underline"
           >
-            {d}
-          </div>
+            {d.short}
+          </abbr>
         ))}
+      </div>
 
+      <div
+        role="group"
+        aria-label={`Jours de ${monthLabel}`}
+        className="grid grid-cols-7 gap-y-1.5 sm:gap-x-1"
+      >
         {weeks.flat().map((date, i) => {
-          if (!date) return <div key={`blank-${i}`} />
+          if (!date) return <div key={`blank-${i}`} aria-hidden="true" />
 
           const status = getDayStatus(date)
           const isSelected = selected ? isSameDay(date, selected) : false
           const isToday = isSameDay(date, today)
           const disabled = status !== "available"
+          const label = [
+            dayLabelFormatter.format(date),
+            isToday ? "aujourd'hui" : null,
+            statusLabels[status],
+          ]
+            .filter(Boolean)
+            .join(", ")
 
           return (
-            <button
-              key={date.toISOString()}
-              type="button"
-              disabled={disabled}
-              onClick={() => onSelect(date)}
-              title={
-                status === "busy"
-                  ? "Complet"
-                  : status === "past"
-                    ? "Date passée"
-                    : "Disponible"
-              }
-              className={[
-                "aspect-square rounded-full font-sans text-sm transition-colors",
-                isSelected
-                  ? "bg-ink text-cream"
-                  : status === "available"
-                    ? "text-ink hover:bg-ink/10"
-                    : status === "busy"
-                      ? "text-ink/25 line-through decoration-ink/25"
-                      : "text-ink/15",
-                isToday && !isSelected ? "ring-1 ring-taupe" : "",
-              ].join(" ")}
-            >
-              {date.getDate()}
-            </button>
+            <div key={date.toISOString()} className="flex justify-center">
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={() => onSelect(date)}
+                aria-label={label}
+                aria-pressed={isSelected}
+                title={status === "busy" ? "Complet" : status === "past" ? "Date passée" : undefined}
+                className={[
+                  "flex size-10 items-center justify-center rounded-full font-sans text-sm tabular-nums transition-colors duration-300 ease-luxe sm:size-11",
+                  isSelected
+                    ? "bg-ink font-normal text-cream"
+                    : status === "available"
+                      ? "font-normal text-ink hover:bg-cream-dark"
+                      : status === "busy"
+                        ? "text-ink/40 line-through decoration-ink/40"
+                        : "text-ink/30",
+                  isToday && !isSelected ? "ring-1 ring-taupe-deep ring-inset" : "",
+                ].join(" ")}
+              >
+                {date.getDate()}
+              </button>
+            </div>
           )
         })}
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-ink/10 pt-5 text-xs text-ink-soft/70">
-        <span className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-ink" /> Sélectionné
-        </span>
-        <span className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full border border-ink/40" /> Disponible
-        </span>
-        <span className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-ink/15" /> Complet
-        </span>
-      </div>
+      <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 border-t border-ink/10 px-2 pt-5 text-xs text-ink-soft">
+        {legend.map(({ label, swatchClass }) => (
+          <li key={label} className="flex items-center gap-2">
+            <span
+              aria-hidden="true"
+              className={`flex size-6 items-center justify-center rounded-full font-sans text-[0.65rem] tabular-nums ${swatchClass}`}
+            >
+              8
+            </span>
+            {label}
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

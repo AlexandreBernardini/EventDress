@@ -1,12 +1,20 @@
 import { type FormEvent, useEffect, useState } from "react"
-import { useSearchParams } from "react-router-dom"
+import { Link, useSearchParams } from "react-router-dom"
+import PageHeader from "../components/PageHeader"
+import Reveal from "../components/Reveal"
+import { ArrowRightIcon, GoogleIcon, HangerIcon } from "../components/icons"
 import { apiPost, fetchMe, type User } from "../lib/api"
 
 const errors: Record<string, string> = {
-  connexion_annulee: "La connexion a été annulée, réessaie.",
-  email_non_verifie: "Ton adresse Google doit être vérifiée pour se connecter.",
-  google_indisponible: "Google est indisponible pour le moment, réessaie plus tard.",
+  connexion_annulee: "La connexion a été annulée, veuillez réessayer.",
+  email_non_verifie: "Votre adresse Google doit être vérifiée pour vous connecter.",
+  google_indisponible: "Google est indisponible pour le moment, veuillez réessayer plus tard.",
 }
+
+const modes = [
+  { value: "login", label: "Connexion" },
+  { value: "register", label: "Créer un compte" },
+] as const
 
 export default function Compte() {
   const [searchParams] = useSearchParams()
@@ -45,88 +53,140 @@ export default function Compte() {
     setUser(null)
   }
 
+  const switchMode = (next: "login" | "register") => {
+    setMode(next)
+    setMessage(null)
+  }
+
   if (loading) {
-    return <div className="py-32 text-center text-sm text-ink/50">Chargement…</div>
+    return (
+      <div role="status" aria-live="polite" className="flex flex-col items-center gap-5 py-40">
+        <span
+          aria-hidden
+          className="h-9 w-9 animate-spin rounded-full border border-ink/15 border-t-ink [animation-duration:1.4s]"
+        />
+        <span className="eyebrow">Chargement</span>
+      </div>
+    )
   }
 
   if (user) {
+    const firstName = user.name?.trim().split(/\s+/)[0]
+
     return (
-      <div className="mx-auto max-w-2xl px-6 py-16 md:px-10 md:py-20">
-        <div className="mb-12 flex flex-col items-center gap-4 text-center">
-          <span className="font-display text-sm uppercase tracking-widest-plus text-taupe">Mon compte</span>
-          <h1 className="font-display text-4xl text-ink md:text-5xl">Bonjour{user.name ? `, ${user.name}` : ""}</h1>
-          <p className="text-sm text-ink-soft/80">{user.email}</p>
-        </div>
+      <section className="container-page py-16 md:py-24">
+        <PageHeader
+          eyebrow="Mon compte"
+          title={`Bonjour${firstName ? `, ${firstName}` : ""}`}
+          intro={<p>{user.email}</p>}
+        />
 
-        <div className="border border-ink/15 p-8 text-center">
-          <p className="text-sm text-ink-soft/80">Tes locations passées apparaîtront ici.</p>
-        </div>
+        <Reveal delay={100} className="mx-auto mt-14 max-w-2xl md:mt-20">
+          <div className="panel">
+            <div className="flex items-center justify-between gap-4 border-b border-ink/10 px-6 py-5 sm:px-10">
+              <h2 className="font-display text-2xl text-ink">Mes locations</h2>
+              <span className="eyebrow hidden sm:inline-flex">Historique</span>
+            </div>
 
-        <div className="mt-8 flex justify-center">
-          <button
-            type="button"
-            onClick={logout}
-            className="border border-ink px-8 py-3 font-display text-sm uppercase tracking-widest-plus text-ink transition-colors hover:bg-ink hover:text-cream"
-          >
+            <div className="flex flex-col items-center gap-6 px-6 py-14 text-center sm:px-10 sm:py-16">
+              <span className="flex h-16 w-16 items-center justify-center rounded-full border border-taupe/50 text-taupe-deep">
+                <HangerIcon className="h-7 w-7" />
+              </span>
+              <p className="lead max-w-sm">Vos locations passées apparaîtront ici.</p>
+              <Link
+                to="/catalogue"
+                className="group inline-flex min-h-10 items-center gap-3 font-display text-sm uppercase tracking-widest-plus text-ink"
+              >
+                <span className="link-underline">Découvrir la collection</span>
+                <ArrowRightIcon className="h-4 w-4 transition-transform duration-500 ease-luxe group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal delay={200} className="mt-12 flex justify-center">
+          <button type="button" onClick={logout} className="btn btn-outline">
             Se déconnecter
           </button>
-        </div>
-      </div>
+        </Reveal>
+      </section>
     )
   }
 
   const shownError = message ?? (urlError ? errors[urlError] ?? "Une erreur est survenue" : null)
 
   return (
-    <div className="mx-auto max-w-md px-6 py-16 md:px-10 md:py-20">
-      <div className="mb-10 flex flex-col items-center gap-4 text-center">
-        <span className="font-display text-sm uppercase tracking-widest-plus text-taupe">Mon compte</span>
-        <h1 className="font-display text-4xl text-ink">{mode === "login" ? "Connexion" : "Créer un compte"}</h1>
-      </div>
+    <section className="container-page py-16 md:py-24">
+      <PageHeader eyebrow="Mon compte" title={mode === "login" ? "Connexion" : "Créer un compte"} />
 
-      <a
-        href="/api/auth/google-start.php"
-        className="flex w-full items-center justify-center gap-3 border border-ink/25 px-6 py-3 text-sm text-ink transition-colors hover:border-ink"
-      >
-        Continuer avec Google
-      </a>
+      <Reveal delay={100} className="mx-auto mt-14 max-w-md md:mt-20">
+        <div className="panel px-6 py-10 sm:px-10 sm:py-12">
+          <div
+            role="group"
+            aria-label="Choisir entre connexion et création de compte"
+            className="mb-10 grid grid-cols-2 border border-ink/15 p-1"
+          >
+            {modes.map((m) => (
+              <button
+                key={m.value}
+                type="button"
+                aria-pressed={mode === m.value}
+                onClick={() => switchMode(m.value)}
+                className={`min-h-11 px-2 font-display text-[0.7rem] uppercase tracking-[0.22em] transition-colors duration-500 ease-luxe sm:text-xs ${
+                  mode === m.value ? "bg-ink text-cream" : "text-ink-soft hover:text-ink"
+                }`}
+              >
+                {m.label}
+              </button>
+            ))}
+          </div>
 
-      <div className="my-8 flex items-center gap-4 text-xs uppercase tracking-widest-plus text-ink/40">
-        <span className="h-px flex-1 bg-ink/15" /> ou <span className="h-px flex-1 bg-ink/15" />
-      </div>
+          <a
+            href="/api/auth/google-start.php"
+            className="btn btn-outline w-full border-ink/25 font-sans text-[0.9375rem] font-normal normal-case tracking-normal hover:border-ink hover:bg-cream-dark/50 hover:text-ink"
+          >
+            <GoogleIcon className="h-[1.125rem] w-[1.125rem]" />
+            Continuer avec Google
+          </a>
 
-      <form onSubmit={submit} className="space-y-6">
-        {mode === "register" && (
-          <Input label="Prénom et nom" name="name" required />
-        )}
-        <Input label="Email" name="email" type="email" required />
-        <Input label="Mot de passe" name="password" type="password" required minLength={8} />
+          <div className="my-9 flex items-center gap-5" aria-hidden>
+            <span className="h-px flex-1 bg-ink/12" />
+            <span className="font-display text-sm italic text-taupe-deep">ou</span>
+            <span className="h-px flex-1 bg-ink/12" />
+          </div>
 
-        {shownError && <p className="text-sm text-[#8a2e2e]">{shownError}</p>}
+          <form onSubmit={submit} className="space-y-7">
+            {mode === "register" && <Input label="Prénom et nom" name="name" autoComplete="name" required />}
+            <Input label="Email" name="email" type="email" autoComplete="email" required />
+            <Input
+              label="Mot de passe"
+              name="password"
+              type="password"
+              autoComplete={mode === "login" ? "current-password" : "new-password"}
+              required
+              minLength={8}
+              hint={mode === "register" ? "8 caractères minimum" : undefined}
+            />
 
-        <button
-          type="submit"
-          disabled={submitting}
-          className="w-full bg-ink px-8 py-3 font-display text-sm uppercase tracking-widest-plus text-cream transition-colors hover:bg-ink-soft disabled:opacity-60"
-        >
-          {submitting ? "Un instant…" : mode === "login" ? "Se connecter" : "Créer mon compte"}
-        </button>
-      </form>
+            {shownError && (
+              <p role="alert" className="field-error border-l border-danger pl-4">
+                {shownError}
+              </p>
+            )}
 
-      <p className="mt-8 text-center text-sm text-ink-soft/80">
-        {mode === "login" ? "Pas encore de compte ?" : "Déjà un compte ?"}{" "}
-        <button
-          type="button"
-          onClick={() => {
-            setMode(mode === "login" ? "register" : "login")
-            setMessage(null)
-          }}
-          className="underline underline-offset-4 hover:text-ink"
-        >
-          {mode === "login" ? "Créer un compte" : "Se connecter"}
-        </button>
-      </p>
-    </div>
+            <button type="submit" disabled={submitting} aria-busy={submitting} className="btn btn-primary w-full">
+              {submitting && (
+                <span
+                  aria-hidden
+                  className="h-3.5 w-3.5 animate-spin rounded-full border border-cream/30 border-t-cream"
+                />
+              )}
+              {submitting ? "Un instant…" : mode === "login" ? "Se connecter" : "Créer mon compte"}
+            </button>
+          </form>
+        </div>
+      </Reveal>
+    </section>
   )
 }
 
@@ -136,16 +196,21 @@ function Input({
   type = "text",
   required = false,
   minLength,
+  autoComplete,
+  hint,
 }: {
   label: string
   name: string
   type?: string
   required?: boolean
   minLength?: number
+  autoComplete?: string
+  hint?: string
 }) {
+  const hintId = hint ? `${name}-hint` : undefined
   return (
     <div>
-      <label htmlFor={name} className="mb-2 block font-display text-xs uppercase tracking-widest-plus text-ink/60">
+      <label htmlFor={name} className="field-label">
         {label}
       </label>
       <input
@@ -154,8 +219,15 @@ function Input({
         type={type}
         required={required}
         minLength={minLength}
-        className="w-full border-0 border-b border-ink/25 bg-transparent py-2 text-sm text-ink focus:border-ink focus:outline-none"
+        autoComplete={autoComplete}
+        aria-describedby={hintId}
+        className="field-input"
       />
+      {hint && (
+        <p id={hintId} className="mt-2 text-xs text-ink-soft/80">
+          {hint}
+        </p>
+      )}
     </div>
   )
 }
